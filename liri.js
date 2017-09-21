@@ -22,6 +22,7 @@ inquirer.prompt([{
 
 		case 'my-tweets':
 			console.log('my-tweets');
+			// getTweets();
 			break;
 
 		case 'spotify-this-song':
@@ -32,12 +33,14 @@ inquirer.prompt([{
 			  }
 			])
 			.then((answers) => {
-				console.log(answers);
+				console.log(answers.song);
+				// getMusic();
 			});
 			break;
 
 		case 'movie-this':
 			console.log('movie-this');
+			// getMovie();
 			break;
 
 		case 'do-what-it-says\n':
