@@ -1,0 +1,24 @@
+{
+  "name": "liri_node_app",
+  "version": "1.0.0",
+  "description": "LIRI is a command line node app that takes in parameters and gives you back data.",
+  "main": "liri.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fredlintz5/liri_node_app.git"
+  },
+  "author": "Fred Lintz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fredlintz5/liri_node_app/issues"
+  },
+  "homepage": "https://github.com/fredlintz5/liri_node_app#readme",
+  "dependencies": {
+    "request": "^2.82.0",
+    "spotify": "^0.3.0",
+    "twitter": "^1.7.1"
+  }
+}
