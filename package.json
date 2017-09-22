@@ -17,9 +17,10 @@
   },
   "homepage": "https://github.com/fredlintz5/liri_node_app#readme",
   "dependencies": {
+    "colors": "^1.1.2",
     "inquirer": "^3.3.0",
+    "node-spotify-api": "^1.0.7",
     "request": "^2.82.0",
-    "spotify": "^0.3.0",
     "twitter": "^1.7.1"
   }
 }
