@@ -70,6 +70,7 @@ function getTweets() {
 }
 
 
+
 function getMusic(song) {
 	const Spotify = new spotify(API_Keys.spotifyKeys);
  
@@ -87,6 +88,7 @@ function getMusic(song) {
 		console.log(`Have a listen over at ${songURL.green}!\n`.cyan);
 		});
 }
+
 
 
 function getMovie() {
