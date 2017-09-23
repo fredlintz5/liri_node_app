@@ -135,7 +135,7 @@ function getMusic(song) {
 
 		console.log("\nGreat choice!\n".cyan);
 		console.log(`I love '${songName}' by ${artistName}. Wasn't that on the album '${albumName}'?`.cyan);
-		console.log(`Have a listen over at ${songURL.grey}!\n`.cyan);
+		console.log(`Have a listen over at ${songURL.grey}\n`.cyan);
 
 		logStuffThatHappens('spotify-this-song   ', song);
 
