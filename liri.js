@@ -210,6 +210,7 @@ function logErrors(func, query) {
 	fs.appendFile("log.txt", `\n ${errorD.getTime()}:  Error Occured: 'running: '${func}' with a query of '${query}',`, (err) => {
 
 		if (err) {
+			logErrors('logErrors()', query);
 			console.log(err);
 		}
 	});
