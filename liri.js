@@ -11,26 +11,6 @@ const fs  	   = require('fs');
 programStart();
 
 
-
-function reRunProgram() {
-	inquirer.prompt([{
-	    type: 'confirm',
-	    name: 'confirm',
-	    message: 'Would you like to re-start the program?',
-	  }
-	])
-	.then((answers) => {
-		if (answers.confirm) {
-			logStuffThatHappens('to reRun the program', 'Yes');
-			programStart();
-		} else {
-			logStuffThatHappens('to abort the program', 'No');
-			console.log("\nGood Bye!\n".cyan);
-		}
-	})
-}
-
-
 function programStart() {
 	logStuffThatHappens('to start the program', 'node liri.js');
 
@@ -94,6 +74,25 @@ function programStart() {
 }
 
 
+function reRunProgram() {
+	inquirer.prompt([{
+	    type: 'confirm',
+	    name: 'confirm',
+	    message: 'Would you like to re-start the program?',
+	  }
+	])
+	.then((answers) => {
+		if (answers.confirm) {
+			logStuffThatHappens('to reRun the program', 'Yes');
+			programStart();
+		} else {
+			logStuffThatHappens('to abort the program', 'No');
+			console.log("\nGood Bye!\n".cyan);
+		}
+	})
+}
+
+
 function getTweets() {
 	const client = new twitter(API_Keys.twitterKeys);
 	const queryUrl = "https://api.twitter.com/1.1/search/tweets.json?q=realFredLintz&result_type=recent&count=20";
@@ -125,7 +124,7 @@ function getMusic(song) {
 	Spotify.search({ type: 'track', query: song, limit: 1 }, (err, data) => {
 		if (err) {
 			logErrors('getMusic()', song);
-			return console.log('Error occurred: ' + err);
+			return console.log(`\n${err}\n`.red);
 		}
 		// console.log(JSON.stringify(data.tracks.items[0], null, 2));
 		let artistName = data.tracks.items[0].album.artists[0].name;
@@ -153,10 +152,10 @@ function getMovie(movie) {
 		if (JSON.parse(body).Response === 'False') {
 			console.log("\nThat movie title doesn't exist, try again?\n".red);
 			logErrors('getMovie()', movie);
-			return;
-		} 
+			reRunProgram();
 
-		if (!error && response.statusCode === 200) {
+		} else if (!error && response.statusCode === 200) {
+
 			const title = JSON.parse(body).Title; 
 			const movieYear = JSON.parse(body).Year;
 			const country = JSON.parse(body).Country;
@@ -185,9 +184,10 @@ function getMovie(movie) {
 			logStuffThatHappens('movie-this          ', movie);
 
 			setTimeout(reRunProgram, 1000);
+
 		} else {
 			logErrors('getMovie()', movie);
-			console.log(error);
+			return console.log(error);
 		}
 	});
 }
@@ -199,7 +199,7 @@ function logStuffThatHappens(func, query) {
 
 		if (err) {
 			logErrors('logStuffThatHappens()', query);
-			console.log(err);
+			return console.log(err);
 		}
 	});
 }
@@ -211,7 +211,7 @@ function logErrors(func, query) {
 
 		if (err) {
 			logErrors('logErrors()', query);
-			console.log(err);
+			return console.log(err);
 		}
 	});
 }
