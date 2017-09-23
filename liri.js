@@ -5,6 +5,7 @@ const spotify  = require('node-spotify-api');
 const request  = require('request');
 const inquirer = require('inquirer');
 const colors   = require('colors');
+const fs  	   = require('fs');
 
 
 programStart();
@@ -20,8 +21,10 @@ function reRunProgram() {
 	])
 	.then((answers) => {
 		if (answers.confirm) {
+			logStuffThatHappens('to reRun the program', 'Yes');
 			programStart();
 		} else {
+			logStuffThatHappens('to abort the program', 'No');
 			console.log("\nGood Bye!\n".cyan);
 		}
 	})
@@ -29,6 +32,8 @@ function reRunProgram() {
 
 
 function programStart() {
+	logStuffThatHappens('to start the program', 'node liri.js');
+
 	inquirer.prompt([{
 	    type: 'list',
 	    name: 'program',
@@ -37,7 +42,7 @@ function programStart() {
 			'my-tweets', 
 			'spotify-this-song', 
 			'movie-this', 
-			'do-what-it-says\n'
+			'do-what-it-says'
 	    ]
 	  }
 	])
@@ -75,12 +80,15 @@ function programStart() {
 				});
 				break;
 
-			case 'do-what-it-says\n':
-				console.log('do-what-it-says');
+			case 'do-what-it-says':
+				console.log('\nThis function is currently not supported.\n'.red);
+				logStuffThatHappens('do-what-it-says     ', 'not supported');
+				reRunProgram();
 				break;
 
 			default:
-				console.log("You've done something wrong, try again...")
+				logStuffThatHappens('programStart()      ', 'default Switch/Case');
+				console.log("You've done something wrong, try again...\n".red)
 		}
 	})
 }
@@ -91,6 +99,12 @@ function getTweets() {
 	const queryUrl = "https://api.twitter.com/1.1/search/tweets.json?q=realFredLintz&result_type=recent&count=20";
 
 	client.get(queryUrl, (error, tweets, response) => {
+
+		if (error) {
+			logErrors('getTweets()', '@realFredLintz');
+			console.log(error);
+		}
+
 		console.log("\nHere are the latest tweets from @realFredLintz: \n".cyan);
    		
    		for (var i = 0; i < tweets.statuses.length; i++) {
@@ -98,6 +112,9 @@ function getTweets() {
    		}
    		console.log('');	
 	});
+
+	logStuffThatHappens('my-tweets           ', '@realFredLintz');
+
 	setTimeout(reRunProgram, 1000);
 }
 
@@ -107,6 +124,7 @@ function getMusic(song) {
  
 	Spotify.search({ type: 'track', query: song, limit: 1 }, (err, data) => {
 		if (err) {
+			logErrors('getMusic()', song);
 			return console.log('Error occurred: ' + err);
 		}
 		// console.log(JSON.stringify(data.tracks.items[0], null, 2));
@@ -119,6 +137,8 @@ function getMusic(song) {
 		console.log(`I love '${songName}' by ${artistName}. Wasn't that on the album '${albumName}'?`.cyan);
 		console.log(`Have a listen over at ${songURL.grey}!\n`.cyan);
 
+		logStuffThatHappens('spotify-this-song   ', song);
+
 		setTimeout(reRunProgram, 1000);
 	});
 }
@@ -129,25 +149,74 @@ function getMovie(movie) {
 	const movieQueryUrl = `http://www.omdbapi.com/?t=${movie}&apikey=${apiKey}`;
 
 	request(movieQueryUrl, (error, response, body) => {
-		if (!error && response.statusCode === 200) {
 
+		if (JSON.parse(body).Response === 'False') {
+			console.log("\nThat movie title doesn't exist, try again?\n".red);
+			logErrors('getMovie()', movie);
+			return;
+		} 
+
+		if (!error && response.statusCode === 200) {
 			const title = JSON.parse(body).Title; 
 			const movieYear = JSON.parse(body).Year;
-			const IMDB_Rating = JSON.parse(body).Ratings[0].Value;
-			const rotten_Rating = JSON.parse(body).Ratings[1].Value;
 			const country = JSON.parse(body).Country;
 			const plot = JSON.parse(body).Plot;
 			const actors = JSON.parse(body).Actors;
+			let IMDB_Rating;
+			let rotten_Rating;
+
+			if (JSON.parse(body).Ratings[0]) {
+				IMDB_Rating = JSON.parse(body).Ratings[0].Value;
+			} else {
+				IMDB_Rating = 'undefined';
+			}
+
+			if (JSON.parse(body).Ratings[1]) {
+				rotten_Rating = JSON.parse(body).Ratings[1].Value;
+			} else {
+				rotten_Rating = 'undefined';
+			}
 
 			console.log("\nGreat choice!\n".cyan);
 			console.log(`I love the movie '${title}', starring ${actors}. \nIt was released in ${country} in ${movieYear}, with a IMDB rating of ${IMDB_Rating}, and a Rotten Tomatoes rating of ${rotten_Rating}.\n`.cyan);
 			console.log(`In case you forgot, here's the movie's plot:\n`.cyan);
 			console.log(`${plot.grey}\n`)
 
+			logStuffThatHappens('movie-this          ', movie);
+
 			setTimeout(reRunProgram, 1000);
+		} else {
+			logErrors('getMovie()', movie);
+			console.log(error);
 		}
 	});
 }
+
+
+function logStuffThatHappens(func, query) {
+	let stuffD = new Date();
+	fs.appendFile("log.txt", `\n ${stuffD.getTime()}: User requested: '${func}' with a query of '${query}',`, (err) => {
+
+		if (err) {
+			logErrors('logStuffThatHappens()', query);
+			console.log(err);
+		}
+	});
+}
+
+
+function logErrors(func, query) { 
+	let errorD =new Date();              
+	fs.appendFile("log.txt", `\n ${errorD.getTime()}:  Error Occured: 'running: '${func}' with a query of '${query}',`, (err) => {
+
+		if (err) {
+			console.log(err);
+		}
+	});
+}
+
+
+
 
 
 
